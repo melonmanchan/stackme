@@ -9,13 +9,15 @@ import (
 )
 
 type Question struct {
-	IdAnswer int    `json:accepted_answer_id`
-	Title    string `json:title`
-	Link     string `json:link`
+	Title              string
+	Link               string
+	Accepted_answer_id int
+	Question_id        int
 }
 
 type Questions struct {
-	Questions []Question `json:items`
+	Items           []Question
+	Quota_remaining int
 }
 
 func URLEncodeString(str string) (string, error) {
@@ -61,8 +63,12 @@ func GetStackOverflowQuestions(question string) (string, error) {
 
 	if err != nil {
 		fmt.Println(err)
+		return "", err
 	} else {
-		fmt.Println("%d", len(questions.Questions))
+		for _, item := range questions.Items {
+			fmt.Println("%s", item.Title)
+			fmt.Println("%d", item.Accepted_answer_id)
+		}
 	}
 
 	return "", nil
