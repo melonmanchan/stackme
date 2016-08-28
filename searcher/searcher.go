@@ -4,13 +4,26 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
-func FormatSearchToURL(question string) (output string) {
-	return "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=votes&accepted=True&site=stackoverflow&q=" + question
+func URLEncodeString(str string) (string, error) {
+	encoded, err := url.Parse(str)
+
+	if err != nil {
+		return "", err
+	}
+
+	return encoded.String(), nil
 }
 
-func SearchByQuery(query string) (output string, err error) {
+func FormatSearchToURL(question string) (output string) {
+	formatted, _ := URLEncodeString(question)
+
+	return "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=votes&accepted=True&site=stackoverflow&q=" + formatted
+}
+
+func SearchByQuery(query string) (string, error) {
 
 	url := FormatSearchToURL(query)
 
