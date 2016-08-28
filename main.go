@@ -3,7 +3,6 @@ package main
 import (
 	"./argparse"
 	"./searcher"
-	"fmt"
 	"log"
 	"os"
 )
@@ -15,11 +14,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	results, err := searcher.SearchByQuery(query)
+	_, err = searcher.GetStackOverflowQuestions(query)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(results)
 }
