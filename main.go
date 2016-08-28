@@ -1,9 +1,17 @@
 package main
 
 import (
+	"./argparse"
 	"fmt"
+	"log"
 )
 
 func main() {
-	fmt.Println("Hello")
+	query, err := argparse.ParseArguments()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(query)
 }
