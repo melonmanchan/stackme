@@ -2,11 +2,21 @@ package searcher
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 )
+
+// DoHTTPGet performs a HTTP get request
+func DoHTTPGet(url string) (io.ReadCloser, error) {
+	response, err := http.Get(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return response.Body, nil
+}
 
 // URLEncodeString  encodes a string as URL-safe
 func URLEncodeString(str string) (string, error) {
@@ -28,24 +38,19 @@ func FormatSearchToURL(question string) (output string) {
 
 // SearchByQuery does a GET request to the StackOverflow API, returning it's body
 func SearchByQuery(query string) (io.ReadCloser, error) {
-
 	url := FormatSearchToURL(query)
 
-	response, err := http.Get(url)
+	response, err := DoHTTPGet(url)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return response.Body, nil
+	return response, err
 }
 
 // GetStackOverflowQuestions Fetches a list of questions from stackoverflow matching a query
-func GetStackOverflowQuestions(question string) (string, error) {
+func GetStackOverflowQuestions(question string) ([]Question, error) {
 	body, err := SearchByQuery(question)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	var questions = new(Questions)
@@ -54,14 +59,13 @@ func GetStackOverflowQuestions(question string) (string, error) {
 	body.Close()
 
 	if err != nil {
-		fmt.Println(err)
-		return "", err
+		return nil, err
 	}
 
-	for _, item := range questions.Items {
-		fmt.Println(item.Title)
-		fmt.Println(item.AcceptedAnswerID)
-	}
+	return questions.Items, nil
+}
 
-	return "", nil
+// GetStackOverflowAnswers returns the first answer that contains a block of code
+func GetStackOverflowAnswers(questions []Question) error {
+	return nil
 }

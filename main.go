@@ -15,9 +15,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, err = searcher.GetStackOverflowQuestions(query)
+	questions := []searcher.Question{}
+
+	questions, err = searcher.GetStackOverflowQuestions(query)
 
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = searcher.GetStackOverflowAnswers(questions)
 }
