@@ -1,10 +1,11 @@
 package main
 
 import (
-	"./argparse"
-	"./searcher"
 	"log"
 	"os"
+
+	"./argparse"
+	"./searcher"
 )
 
 func main() {
