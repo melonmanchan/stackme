@@ -65,7 +65,7 @@ func GetStackOverflowQuestions(question string) ([]Question, error) {
 	return questions.Items, nil
 }
 
-// GetStackOverflowAnswers returns the first answer that contains a block of code
+// GetStackOverflowAnswers returns an array of answers of questions
 func GetStackOverflowAnswers(questions []Question) error {
 	return nil
 }
