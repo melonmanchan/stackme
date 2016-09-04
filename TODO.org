@@ -1,0 +1,10 @@
+* Basic functionality
+** Add a struct representing StackOverFlowAnswers to searcher/datatypes.go
+** Add GetStackoverFlowAnswer function for fetching answers for a question
+** Add function for checking out if an answer contains a code block
+** For each Question, get an array of answers and check if it contains a code block
+*** If it contains code, print to STDOUT, quit
+*** If not, print error, quit
+* Bonus features
+** Optional CLI interface for picking a question from the answers?
+** Optional flag for printing out the answer even if it doesn't contain a code block?
