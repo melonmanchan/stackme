@@ -1,8 +1,9 @@
 package searcher_test
 
 import (
-	"."
 	"testing"
+
+	"."
 )
 
 func TestURLEncode(t *testing.T) {
