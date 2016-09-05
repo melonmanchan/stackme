@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 // DoHTTPGet performs a HTTP get request
@@ -16,6 +18,29 @@ func DoHTTPGet(url string) (io.ReadCloser, error) {
 	}
 
 	return response.Body, nil
+}
+
+// QuestionsIDToColonSeparateString creates a semicolon-separated string of IDs
+func QuestionsIDToColonSeparateString(questions []Question) string {
+	if len(questions) == 0 {
+		return ""
+	}
+
+	var output string
+
+	for _, question := range questions {
+		output += strconv.Itoa(question.QuestionID) + ";"
+	}
+
+	// Remove the last semicolon from output
+	var trimmed = strings.TrimSuffix(output, ";")
+
+	return trimmed
+}
+
+// FormatAnswersURL gets an url that fetches an array of answers for questions
+func FormatAnswersURL(questions []Question) string {
+	return ""
 }
 
 // URLEncodeString  encodes a string as URL-safe
