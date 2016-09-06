@@ -2,6 +2,8 @@ package searcher
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -21,9 +23,9 @@ func DoHTTPGet(url string) (io.ReadCloser, error) {
 }
 
 // QuestionsIDToColonSeparateString creates a semicolon-separated string of IDs
-func QuestionsIDToColonSeparateString(questions []Question) string {
+func QuestionsIDToColonSeparateString(questions []Question) (string, error) {
 	if len(questions) == 0 {
-		return ""
+		return "", errors.New("Length of questions cannot be 0!")
 	}
 
 	var output string
@@ -35,12 +37,18 @@ func QuestionsIDToColonSeparateString(questions []Question) string {
 	// Remove the last semicolon from output
 	var trimmed = strings.TrimSuffix(output, ";")
 
-	return trimmed
+	return trimmed, nil
 }
 
 // FormatAnswersURL gets an url that fetches an array of answers for questions
-func FormatAnswersURL(questions []Question) string {
-	return ""
+func FormatAnswersURL(questions []Question) (string, error) {
+	formatted, err := QuestionsIDToColonSeparateString(questions)
+
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("https://api.stackexchange.com/2.2/answers/%s?filter=withbody&osite=stackoverflow", formatted), nil
 }
 
 // URLEncodeString  encodes a string as URL-safe
