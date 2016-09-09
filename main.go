@@ -23,5 +23,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = searcher.GetStackOverflowAnswers(questions)
+	answers := []searcher.Answer{}
+
+	answers, err = searcher.GetStackOverflowAnswers(questions)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, a := range answers {
+		log.Printf("%v", a)
+	}
 }

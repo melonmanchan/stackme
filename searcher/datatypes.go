@@ -22,5 +22,5 @@ type Answer struct {
 
 // Answers is a datatype containing a nested array of answers
 type Answers struct {
-	Answers []Answer
+	Items []Answer
 }

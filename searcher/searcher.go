@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -40,17 +41,6 @@ func QuestionsIDToColonSeparateString(questions []Question) (string, error) {
 	return trimmed, nil
 }
 
-// FormatAnswersURL gets an url that fetches an array of answers for questions
-func FormatAnswersURL(questions []Question) (string, error) {
-	formatted, err := QuestionsIDToColonSeparateString(questions)
-
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("https://api.stackexchange.com/2.2/answers/%s?filter=withbody&osite=stackoverflow", formatted), nil
-}
-
 // URLEncodeString  encodes a string as URL-safe
 func URLEncodeString(str string) (string, error) {
 	encoded, err := url.Parse(str)
@@ -69,8 +59,19 @@ func FormatSearchToURL(question string) (output string) {
 	return "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&accepted=True&site=stackoverflow&q=" + formatted
 }
 
-// SearchByQuery does a GET request to the StackOverflow API, returning it's body
-func SearchByQuery(query string) (io.ReadCloser, error) {
+// FormatAnswersURL gets an url that fetches an array of answers for questions
+func FormatAnswersURL(questions []Question) (string, error) {
+	formatted, err := QuestionsIDToColonSeparateString(questions)
+
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("https://api.stackexchange.com/2.2/questions/%s/answers?filter=withbody&site=stackoverflow", formatted), nil
+}
+
+// GetQuestionResponse searches Stack Overflow questions by a question
+func GetQuestionResponse(query string) (io.ReadCloser, error) {
 	url := FormatSearchToURL(query)
 
 	response, err := DoHTTPGet(url)
@@ -78,9 +79,26 @@ func SearchByQuery(query string) (io.ReadCloser, error) {
 	return response, err
 }
 
+// GetAnswerResponse gets
+func GetAnswerResponse(questions []Question) (io.ReadCloser, error) {
+	var response io.ReadCloser
+
+	url, err := FormatAnswersURL(questions)
+
+	log.Printf(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	response, err = DoHTTPGet(url)
+
+	return response, err
+}
+
 // GetStackOverflowQuestions Fetches a list of questions from stackoverflow matching a query
 func GetStackOverflowQuestions(question string) ([]Question, error) {
-	body, err := SearchByQuery(question)
+	body, err := GetQuestionResponse(question)
 
 	if err != nil {
 		return nil, err
@@ -99,6 +117,21 @@ func GetStackOverflowQuestions(question string) ([]Question, error) {
 }
 
 // GetStackOverflowAnswers returns an array of answers of questions
-func GetStackOverflowAnswers(questions []Question) error {
-	return nil
+func GetStackOverflowAnswers(questions []Question) ([]Answer, error) {
+	body, err := GetAnswerResponse(questions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var answers = new(Answers)
+
+	err = json.NewDecoder(body).Decode(answers)
+	body.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return answers.Items, nil
 }
